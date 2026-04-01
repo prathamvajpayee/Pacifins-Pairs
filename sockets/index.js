@@ -114,5 +114,10 @@ module.exports = function (server) {
       queue = queue.filter(player => player[0] !== socket.id);
       io.emit("QueueLength", queue.length);
     });
+    
+    socket.on("client-ping", (timestamp) => {
+      console.log("SERVER: Heard ping from", socket.id); // <--- ADD THIS
+      socket.emit("server-pong", timestamp);
+    });
   });
 };
