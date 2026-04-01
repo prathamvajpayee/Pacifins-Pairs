@@ -1110,6 +1110,9 @@
   <p class="version"
     style="font-family: 'Jersey 20'; position: absolute; z-index: 1000; font-size: clamp(12px, 3vw, 18px); color:rgb(255, 255, 255); right:10px;">
     Alpha v0.1</p>
+  <p class="ping-display"
+    style="font-family: 'Jersey 20'; position: absolute; z-index: 1000; font-size: clamp(12px, 3vw, 18px); color:rgb(255, 255, 255); right:10px;">
+    Ping: -- ms</p>
   <p class="queuelength"
     style="font-family: 'Jersey 20'; position: absolute; z-index: 1000; font-size: clamp(12px, 3vw, 18px); color:rgb(255, 0, 0);  left:10px;">
     Waiting Player's:0</p>
@@ -1190,6 +1193,26 @@
       glare: true, // Enable glare effect (must be true to activate it)
       "max-glare": 0.8, // Maximum glare opacity (0 to 1)
     })
+
+    const pingDisplay = document.querySelector(".ping-display");
+    console.log(pingDisplay);
+
+    setInterval(() => {
+      console.log("FRONTEND: Firing ping to server..."); // <--- ADD THIS
+      socket.emit("client-ping", Date.now());
+    }, 2000);
+
+    socket.on("server-pong", (startTime) => {
+      const latency = Date.now() - startTime;
+      console.log("FRONTEND: Caught pong! Latency:", latency); // <--- ADD THIS
+      
+      if (pingDisplay) {
+        pingDisplay.innerText = `Ping: ${latency} ms`;
+        if (latency <= 80) pingDisplay.style.color = "#00FF00";
+        else if (latency <= 150) pingDisplay.style.color = "#FFFF00";
+        else pingDisplay.style.color = "#FF0000";
+      }
+    });
 
     function Game(
       playMusic,
